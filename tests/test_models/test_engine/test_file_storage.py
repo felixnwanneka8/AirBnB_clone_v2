@@ -21,7 +21,7 @@ class test_fileStorage(unittest.TestCase):
         """ Remove storage file at end of tests """
         try:
             os.remove('file.json')
-        except:
+        except FileNotFoundError:
             pass
 
     def test_obj_list_empty(self):
@@ -77,7 +77,7 @@ class test_fileStorage(unittest.TestCase):
             storage.reload()
 
     def test_reload_from_nonexistent(self):
-        """ Nothing happens if file does not exist """
+        """ Nothing happens if file does not"""
         self.assertEqual(storage.reload(), None)
 
     def test_base_model_save(self):
@@ -101,6 +101,19 @@ class test_fileStorage(unittest.TestCase):
         for key in storage.all().keys():
             temp = key
         self.assertEqual(temp, 'BaseModel' + '.' + _id)
+
+    def test_params_create(self):
+        """Test create command with parameters"""
+        # Test creating User object with string and integer parameters
+        self.assertTrue(self.onecmd('create User name="John Doe" age=30'))
+        # Test creating Place object with float parameter
+        self.assertTrue(self.onecmd('create Place price_by_night=1500.75'))
+        # creating State object with string parameter containing escaped quotes
+        self.assertTrue(self.onecmd())
+        # Test creating City object with invalid parameter format (skipped)
+        self.assertTrue(self.onecmd('create City population=invalid'))
+        # creating Review oibject with missing value for parameter (skipped)
+        self.assertTrue(self.onecmd('create Review text='))
 
     def test_storage_var_created(self):
         """ FileStorage object storage created """
